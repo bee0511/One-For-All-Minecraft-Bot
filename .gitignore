@@ -45,6 +45,7 @@ profiles.json
 # Editors and OS
 .idea/
 .vscode/
+.eslintrc.js
 *.swp
 *.swo
 *.swn
