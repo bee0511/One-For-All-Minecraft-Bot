@@ -4,7 +4,6 @@ const toml = require("toml-require").install({ toml: require("toml") });
 const config = require(`${process.cwd()}/config.toml`);
 // mc 不知道為甚麼不require打包就會漏掉了
 //const rq_general = require(`./bots/generalbot.js`)
-// const rq_raid = require(`./bots/raidbot.js`)
 // const rq_logger = require("./src/logger");
 const { logger } = require("./src/logger");
 const BotManager = require("./src/modules/botmanager.js");

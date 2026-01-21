@@ -1,13 +1,53 @@
-config.json
-testlog.txt
+# Node.js
 node_modules/
-.vscode/
-dc-js/
-mc-js/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.log
 logs/
-test/
-raid/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage
+coverage/
+*.lcov
+.nyc_output/
+
+# Caches
+.npm/
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+.node_repl_history
+
+# Build output
+dist/
+build/
+out/
+tmp/
+temp/
+
+# Environment and local config
+.env
+.env.*
 config/
-package-lock.json
 config.toml
-profile.json
+profiles.json
+
+# Editors and OS
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+*~
+.DS_Store
+Thumbs.db

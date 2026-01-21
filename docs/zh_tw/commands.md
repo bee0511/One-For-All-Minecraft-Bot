@@ -57,11 +57,6 @@
 ### **查詢玩家分流**
 - find `<player>`
 - findplayer `<player>`
-### **統計 綠寶石拾起榜 分流**
-- raidrank
-- topraid
-- raidtop
-
 
 ---
 

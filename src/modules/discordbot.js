@@ -150,15 +150,7 @@ function addDiscordBotEventHandler(){
                     return
                 }
                 //need check status here
-                if (targetBotIns.status == 2200) {
-                    await interaction.reply({
-                        content: 'Menu For Raid Not Implemented',
-                        ephemeral: true
-                    })
-                    return
-                    let botinfo = await botManager.getBotInfo(targetBot)
-                    interaction.reply(generateRaidBotControlMenu(botinfo))
-                } else if (targetBotIns.status >= 3200) {
+                if (targetBotIns.status >= 3200) {
                     let botinfo = await botManager.getBotInfo(targetBot)
                     interaction.reply(generateGeneralBotControlMenu(botinfo))
                     return
@@ -445,13 +437,6 @@ function generateGeneralBotControlMenuEmbed(botinfo) {
         .setTimestamp()
         .setFooter({ text: 'One For All', iconURL: 'https://i.imgur.com/AfFp7pu.png' });
     return embed;
-}
-//Raid Bot Control Menu
-function generateRaidBotControlMenu(botinfo) {
-    const embed = generateRaidBotControlMenuEmbed(botinfo);
-}
-function generateRaidBotControlMenuEmbed(botinfo) {
-
 }
 function discordWhiteListCheck(member) {
     //console.log(member)

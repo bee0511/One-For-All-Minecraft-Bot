@@ -797,9 +797,6 @@ async function mp_stop(task) {
     //stop = true
 }
 async function mp_test(task) {
-    //let sch = await schematic.loadFromFile(`C:\\Users\\User\\AppData\\Roaming\\.minecraft\\schematics\\goodraid.litematic`)
-    //console.log(sch)
-    // return
     let mapart_build_cfg_cache = await readConfig(`${process.cwd()}/config/${bot_id}/mapart.json`);
     let stationConfig = await readConfig(`${process.cwd()}/config/global/${mapart_build_cfg_cache.station}`);
     let needReStock = [

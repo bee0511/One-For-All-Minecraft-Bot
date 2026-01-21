@@ -12,13 +12,11 @@ Minecraft Bot for McFallout server.
 - [設定](docs/zh_tw/setting.md)
 - [指令](docs/zh_tw/commands.md)
 - [地圖畫](docs/zh_tw/Mapart.md)
-- ~~[兌換](docs/zh_tw/CraftAndExchange.md)~~ 該功能已被伺服器移除
 
-- ~~ [突襲](docs/zh_tw/setting.md) 設定教學~~ 版本更新後 突襲機制改變
 
 ## Contribute
 - [JKLove](https://github.com/JKLoveUU)
-- [MelonRind](https://github.com/aMelonRind) 目前的bot架構 / 突襲 
+- [MelonRind](https://github.com/aMelonRind) 目前的bot架構 / 之前的突襲 Bot 架構 
 - [CZKKKK](https://github.com/AvaCZK) 撰寫設定教學
 - [bee0511](https://github.com/bee0511) 整理bot代碼
 ## 已知錯誤
@@ -47,13 +45,11 @@ mapart 補材料時 分流重啟 多耗時很久
 
 ### Planing
 * Discord
-    1. 突襲介面
-    2. 其他功能的介面
+    1. 其他功能的介面
 * Console
     1. 將log檔案重新命名
     2. TAB completer
     3. command usage suggest
-    4. .help .?
 * MC-Feature
     1. Clear Area 清理區塊
     2. Quest 自動解廢土任務

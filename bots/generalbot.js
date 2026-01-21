@@ -29,7 +29,6 @@ const ChatMessage = require("prismarine-chat")(registry);
 //     if(c=='basicCommand.js') continue
 //     // else console.log("load",commandFiles[c])
 //     // if(commandFiles[c]=='mapart.js') commands.push(require(`./lib/mapart`))
-//     // if(commandFiles[c]=='craftAndExchange.js') commands.push(require(`./lib/craftAndExchange`))
 //     const filePath = path.join(commandsPath,c);
 //     console.log(c)
 //     commands.push(require(filePath))
@@ -41,9 +40,8 @@ const template = require(`../src/template`);
 const mapart = require(`../src/mapart`);
 // const clearArea = require(`../src/clearArea`);
 // const autoQuest = require(`../src/autoQuest`);
-const craftAndExchange = require(`../src/craftAndExchange`);
 const { logger } = require("../src/logger");
-const commands = [mapart, craftAndExchange, template] // clearArea, autoQuest,
+const commands = [mapart, template] // clearArea, autoQuest,
 const basicCommand = require(`../src/basicCommand`)
 if (!profiles[process.argv[2]]) {
     //已經在parent檢查過了 這邊沒有必要

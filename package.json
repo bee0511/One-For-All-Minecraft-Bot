@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "rb": "pkg -t node18-win-x64 index.js -o release-pre/pre.exe",
     "b": "pkg -t node18-win-x64 index.js -o test/abc.exe",
-    "b_linux": "pkg -t node18-linux index.js -o raid/raid",
+    "b_linux": "pkg -t node18-linux index.js -o release-pre/bot-linux",
     "bd": "pkg -t node18-win-x64 index.js -o test/abc.exe --debug"
   },
   "repository": {

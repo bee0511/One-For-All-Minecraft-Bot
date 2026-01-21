@@ -184,14 +184,7 @@ class BotManager {
     child.on("message", (message) => {
       switch (message.type) {
         case "logToFile":
-          if (bot.crtType == "raid")
-            logger(
-              true,
-              message.value.type,
-              bot.name.substring(0, 4),
-              message.value.msg
-            );
-          else logger(true, message.value.type, bot.name, message.value.msg);
+          logger(true, message.value.type, bot.name, message.value.msg);
           break;
         case "setReloadCD":
           this.setBotReloadCD(bot, message.value);
@@ -233,7 +226,7 @@ class BotManager {
       return;
     }
 
-    const validTypes = ["general", "raid", "auto", "material"];
+    const validTypes = ["general", "auto", "material"];
     if (!validTypes.includes(type)) {
       console.log(`Unknown bot type ${type} of ${name}`);
       return null;
@@ -254,8 +247,6 @@ class BotManager {
     switch (crtType) {
       case "general":
         return `${process.cwd()}/bots/generalbot.js`;
-      case "raid":
-        return `${process.cwd()}/bots/raidbot.js`;
       default:
         logger(true, "ERROR", "BOTMANAGER", `Invalid crtType: ${crtType}`);
         exit(1000);

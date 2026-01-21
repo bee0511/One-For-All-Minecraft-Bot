@@ -2,7 +2,6 @@ const fs = require('fs');
 const fsp = require('fs').promises
 const crypto = require('crypto');
 const { Vec3 } = require('vec3')
-const { once } = require('events')
 const containerOperation = require(`../lib/containerOperation`);
 const mcFallout = require(`../lib/mcFallout`);
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
@@ -220,18 +219,7 @@ const basicCommand = {
             longRunning: false,
             permissionRequre: 0,
         },
-        {
-            name: "統計 綠寶石拾起榜 分流",
-            identifier: [
-                "raidrank",
-                "topraid",
-                "raidtop"
-            ],
-            execute: cmd_getTopRaidServers,
-            vaild: true,
-            longRunning: true,
-            permissionRequre: 0,
-        },
+
         {
             name: "Exit",
             identifier: [
@@ -556,85 +544,6 @@ async function cmd_findPlayer(task) {
     // if (ps != -1) {
     //     taskreply(task, `Found ${task.content[1]} At ${ps}`, `Found ${task.content[1]} At ${ps}`, `Found ${task.content[1]} At ${ps}`)
     // } else taskreply(task, `Player ${task.content[1]} Not Found`, `Player ${task.content[1]} Not Found`, `Player ${task.content[1]} Not Found`)
-}
-async function cmd_getTopRaidServers(task) {
-    try { bot.closeWindow(bot.currentWindow) } catch (err) { }
-    let fail = false;
-    let tgPlayerList = []
-    let tgEmerald = []
-    try {
-        await new Promise(async (res, rej) => {
-            const timeout = setTimeout(() => {
-                fail = true;
-                rej()
-            }, 15_000)
-            bot.chat(`/stats 綠寶石拾起`)
-            console.log("等待開啟統計")
-            await once(bot, 'windowOpen')
-            if (!fail) {
-                await sleep(50)
-                let wd = bot.currentWindow
-                // console.log(wd)
-                // console.log(wd.title)
-                if (!wd.title.includes("綠寶石 拾起數量")) {
-                    rej("錯誤menu")
-                }
-                let tt = Date.now()
-                while (wd.slots[9] == null) {
-                    if (Date.now() - tt > 10000) {
-                        rej(" 綠寶石 拾起數量 timeout")
-                    }
-                    await sleep(50)
-                }
-                //await sleep(3000)
-                for (slot of wd.slots) {
-                    if (!slot) continue
-                    if (slot.slot < 9) continue
-                    //console.log(slot)
-                    if (slot.name == 'player_head') {
-                        //console.log(slot.nbt.value.display.value.Lore.value.value)
-                        let nameJson = JSON.parse(slot?.nbt?.value?.display?.value?.Name?.value)
-                        let pname = nameJson.extra.filter(item => item.color === "white" && item.text.trim().length > 0).map(item => item.text.trim())[0];
-                        tgPlayerList.push(pname)
-                        let em_match = slot?.nbt?.value?.display?.value?.Lore?.value?.value[0].match(/"text":"(\d+) "/g);
-                        // console.log(em_match)
-                        if (em_match) {
-                            var number = parseInt(em_match[1].match(/"text":"(\d+) "/)[1], 10);
-                            tgEmerald.push(number)
-                            //console.log(number);  // logs: 988847
-                        } else {
-                            tgEmerald.push(-1)
-                            //console.log(-1)
-                        }
-                        //console.log(pname)
-                    }
-                }
-                res();
-            } else {
-                console.log("統計 開啟失敗")
-                rej("統計 開啟失敗")
-            }
-        })
-    } catch (e) {
-        fail = true
-        console.log(e)
-        //console.log("傳送失敗")
-    }
-    if (!fail && tgPlayerList.length > 0) {
-        let playerServer_Result = await mcFallout.getPlayerServer(bot, tgPlayerList);
-        for (idx in tgPlayerList) {
-            let server = "-";
-            if (playerServer_Result[tgPlayerList[idx]] == -1) {
-
-            } else if (playerServer_Result[tgPlayerList[idx]].startsWith('server')) {
-                server = playerServer_Result[tgPlayerList[idx]].slice(6)
-            }
-            //  playerServer_Result[tgPlayerList[idx]].toString().padStart(8)
-            console.log(`${(parseInt(idx) + 1).toString().padEnd(2)} ${tgPlayerList[idx].padEnd(16)} ${server.padStart(3)} ${tgEmerald[idx].toString().padStart(8)}`)
-        }
-    }
-    try { bot.closeWindow(bot.currentWindow) } catch (err) { }
-    //  /stats 綠寶石拾起
 }
 async function cmd_click(task) {
     let id = parseInt(task.content[1]);
