@@ -1,7 +1,7 @@
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 const pTimeout = require('p-timeout');      //目標弄掉這個
 const containerOperation = require(`../lib/containerOperation`);
-const mcFallout = require(`../lib/mcFallout`);
+const mcFallout = require("../services/minecraft");
 const pathfinder = require(`../lib/pathfinder`);
 const { Vec3 } = require('vec3')
 const v = require('vec3')

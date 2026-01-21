@@ -11,7 +11,7 @@ const promisify = f => (...args) => new Promise((resolve, reject) => f(...args, 
 const parseNbt = promisify(nbt.parse);
 const pTimeout = require('p-timeout');
 const containerOperation = require(`../lib/containerOperation`);
-const mcFallout = require(`../lib/mcFallout`);
+const mcFallout = require("../services/minecraft");
 const pathfinder = require(`../lib/pathfinder`);
 const schematic = require(`../lib/schematic`);
 const station = require(`../lib/station`);

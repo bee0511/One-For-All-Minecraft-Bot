@@ -9,10 +9,10 @@ const registry = require("prismarine-registry")("1.18.2");
 const ChatMessage = require("prismarine-chat")(registry);
 const profiles = require(`${process.cwd()}/profiles.json`);
 
-const mapart = require("../src/mapart");
-const { logger } = require("../src/logger");
-const basicCommandsModule = require("../src/commands/basic");
-const GeneralBot = require("../src/bots/general/GeneralBot");
+const mapart = require("../../mapart");
+const { logger } = require("../../logger");
+const basicCommandsModule = require("../../commands/basic");
+const GeneralBot = require("../../services/bot/GeneralBot");
 
 const debug = process.argv.includes("--debug");
 const enableChat = process.argv.includes("--chat");

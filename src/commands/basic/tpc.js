@@ -1,4 +1,4 @@
-const mcFallout = require("../../lib/mcFallout");
+const mcFallout = require("../../services/minecraft");
 const { getContext } = require("./context");
 
 module.exports = {

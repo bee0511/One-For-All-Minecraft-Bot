@@ -1,49 +1,10 @@
+const ChatManager = require("./ChatManager");
+const CommandResolver = require("./CommandResolver");
+const MapManager = require("./MapManager");
+const Task = require("./Task");
+const TaskManager = require("./TaskManager");
+
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
-
-class Task {
-	priority = 10;
-	displayName = "";
-	source = "";
-	content = "";
-	timestamp = Date.now();
-	sendNotification = true;
-	//MC-DM
-	minecraftUser = "";
-	//DC
-	discordUser = null;
-
-	//Console
-	/**
-	 *
-	 * @param {*} priority
-	 * @param {*} displayName
-	 * @param {string} source AcceptSource: console, minecraft-dm, discord
-	 * @param {string[]} content
-	 * @param {Date} timestamp
-	 * @param {boolean} sendNotification
-	 * @param {string | null} minecraftUser
-	 * @param {string | null} discordUser
-	 */
-	constructor(
-		priority = 10,
-		displayName = "未命名",
-		source = "",
-		content = "",
-		timestamp = Date.now(),
-		sendNotification = true,
-		minecraftUser = "",
-		discordUser = null,
-	) {
-		this.priority = priority;
-		this.displayName = displayName;
-		this.source = source;
-		this.content = content;
-		this.timestamp = timestamp;
-		this.sendNotification = sendNotification;
-		this.minecraftUser = minecraftUser;
-		this.discordUser = discordUser;
-	}
-}
 
 class GeneralBot {
 	constructor(options) {
@@ -76,9 +37,22 @@ class GeneralBot {
 			tabUpdateTime: new Date(),
 		};
 
-		this.mapManager = this.createMapManager();
-		this.chatManager = this.createChatManager();
-		this.taskManager = this.createTaskManager();
+		this.commandResolver = new CommandResolver({
+			commandGroups: this.commands,
+			basicCommands: this.basicCommands,
+		});
+		this.taskManager = new TaskManager({
+			logger: this.logger,
+			profileName: this.profileName,
+			fs: this.fs,
+			fsp: this.fsp,
+			sendStatus: (value) => this.sendStatus(value),
+			getLogin: () => this.login,
+			commandResolver: this.commandResolver,
+			cwd: () => this.process.cwd(),
+		});
+		this.chatManager = new ChatManager();
+		this.mapManager = new MapManager();
 	}
 
 	start() {
@@ -144,6 +118,9 @@ class GeneralBot {
 				// }
 			});
 		}
+		this.taskManager.setBot(this.bot);
+		this.chatManager.setBot(this.bot);
+		this.mapManager.setBot(this.bot);
 		this.registerBotEvents();
 		return this.bot;
 	}
@@ -154,12 +131,9 @@ class GeneralBot {
 		});
 		this.bot.on("message", async (jsonMsg) => {
 			if (this.enableChat) {
-				if (
-					jsonMsg
-						.toString()
-						.includes("目標生命 : ❤❤❤❤❤❤❤❤❤❤")
-				)
+				if (jsonMsg.toString().includes("目標生命 : ❤❤❤❤❤❤❤❤❤❤")) {
 					return;
+				}
 				this.logger(false, "CHAT", this.profileName, jsonMsg.toAnsi());
 			}
 		});
@@ -200,7 +174,12 @@ class GeneralBot {
 			);
 		});
 		this.bot.once("end", async () => {
-			this.logger(true, "WARN", this.profileName, `${this.profileName} disconnect`);
+			this.logger(
+				true,
+				"WARN",
+				this.profileName,
+				`${this.profileName} disconnect`,
+			);
 			await sleep(1000);
 			await this.kill(1000);
 		});
@@ -356,239 +335,6 @@ class GeneralBot {
 		this.process.exit(code);
 	}
 
-	createMapManager() {
-		const generalBot = this;
-		return {
-			maplist: [],
-			init() {
-				if (!generalBot.bot) return;
-				generalBot.bot.mapManager = this;
-				generalBot.bot._client.on("map", () => {
-					//console.log(mapdata)
-				});
-			},
-		};
-	}
-
-	createChatManager() {
-		const generalBot = this;
-		const chatManager = {
-			q: [],
-			pq: [],
-			cd: 400,
-			lastSend: Date.now(),
-			chat: async function (text) {
-				this.q.push(text);
-			},
-			cmd: async function (text) {
-				this.pq.push(text);
-			},
-			init: function () {
-				if (!generalBot.bot) return;
-				generalBot.bot.chatManager = this;
-			},
-		};
-		chatManager.checker = setInterval(async () => {
-			if (chatManager.q.length === 0 && chatManager.pq.length === 0) return;
-			if (Date.now() - chatManager.lastSend < chatManager.cd) return;
-			if (!generalBot.bot) return;
-			if (chatManager.pq.length !== 0) {
-				generalBot.bot.chat(chatManager.pq.shift());
-				chatManager.lastSend = Date.now();
-				return;
-			}
-			if (chatManager.q.length !== 0) {
-				generalBot.bot.chat(chatManager.q.shift());
-				chatManager.lastSend = Date.now();
-			}
-		}, 10);
-		return chatManager;
-	}
-
-	createTaskManager() {
-		const generalBot = this;
-		return {
-			tasks: [],
-			err_tasks: [],
-			defaultPriority: 10,
-			tasking: false,
-			commands: generalBot.commands,
-			basicCommands: generalBot.basicCommands,
-			basicCommandLabel: generalBot.basicCommandLabel,
-			taskSort() {
-				this.tasks.sort((a, b) => {
-					if (a.priority === b.priority) {
-						return a.timestamp - b.timestamp;
-					}
-					return a.priority - b.priority;
-				});
-			},
-			async init() {
-				generalBot.bot.taskManager = this;
-				if (
-					!generalBot.fs.existsSync(
-						`${generalBot.process.cwd()}/config/${generalBot.profileName}/task.json`,
-					)
-				) {
-					this.save();
-				} else {
-					try {
-						const taskData = await generalBot.readConfig(
-							`${generalBot.process.cwd()}/config/${generalBot.profileName}/task.json`,
-						);
-						this.tasks = taskData.tasks;
-						this.err_tasks = taskData.err_tasks;
-					} catch (e) {
-						await this.save();
-					}
-				}
-				if (this.tasks.length !== 0 && !this.tasking) {
-					generalBot.logger(
-						false,
-						"INFO",
-						generalBot.profileName,
-						`Found ${this.tasks.length} Task, will run at 3 second later.`,
-					);
-					await sleep(3000);
-					await this.loop(false);
-				}
-			},
-			isTask(args) {
-				return generalBot.resolveCommand(args);
-			},
-			async execute(task) {
-				const args = task.content;
-				if (task.source === "console") task.console = generalBot.logger;
-				const command = generalBot.resolveCommand(args);
-				generalBot.logger(
-					true,
-					"INFO",
-					generalBot.profileName,
-					`execute task ${task.displayName}`,
-				);
-				if (!command) {
-					console.log(task);
-					generalBot.logger(
-						true,
-						"ERROR",
-						generalBot.profileName,
-						`task ${task.displayName} not found`,
-					);
-					return;
-				}
-				await command.execute(task);
-				if (command.longRunning)
-					generalBot.logger(
-						true,
-						"INFO",
-						generalBot.profileName,
-						`任務 ${task.displayName} \x1b[32mcompleted\x1b[0m`,
-					);
-			},
-			async assign(task, longRunning = true) {
-				if (longRunning) {
-					if (task.sendNotification) {
-						switch (task.source) {
-							case "minecraft-dm":
-								generalBot.bot.chat(
-									`/m ${task.minecraftUser} Receive Task Success Add To The Queue`,
-								);
-								break;
-							case "console":
-								generalBot.logger(
-									true,
-									"INFO",
-									generalBot.profileName,
-									"Receive Task \x1b[33mSuccess Add To The Queue\x1b[0m",
-								);
-								break;
-							case "discord":
-								generalBot.logger(
-									true,
-									"INFO",
-									generalBot.profileName,
-									"Receive Task \x1b[33mSuccess Add To The Queue\x1b[0m",
-								);
-								break;
-							default:
-								break;
-						}
-					}
-					this.tasks.push(task);
-					if (generalBot.login) await this.save();
-					if (!this.tasking) await this.loop(true);
-				} else {
-					this.execute(task);
-				}
-			},
-			async loop(sort = true) {
-				if (this.tasking) return;
-				this.tasking = true;
-				generalBot.sendStatus(3202);
-				if (sort) this.taskSort();
-				const currentTask = this.tasks[0];
-				if (generalBot.login) await this.save();
-				await this.execute(currentTask);
-				this.tasks.shift();
-				if (generalBot.login) await this.save();
-				this.tasking = false;
-				generalBot.sendStatus(3201);
-				if (this.tasks.length) await this.loop(true);
-			},
-			async save() {
-				const data = {
-					tasks: this.tasks,
-					err_tasks: this.err_tasks,
-				};
-				await generalBot.fsp.writeFile(
-					`${generalBot.process.cwd()}/config/${generalBot.profileName}/task.json`,
-					JSON.stringify(data, null, "\t"),
-					function (err) {
-						if (err) console.log("tasks save error", err);
-					},
-				);
-			},
-		};
-	}
-
-	resolveCommand(args) {
-		let result;
-		for (let index = 0; index < this.commands.length && !result; index++) {
-			const commandGroup = this.commands[index];
-			if (commandGroup.identifiers.includes(args[0])) {
-				for (
-					let commandIndex = 0;
-					commandIndex < commandGroup.commands.length && !result;
-					commandIndex++
-				) {
-					const subCommandKey = args.slice(1, args.length)[0];
-					if (
-						commandGroup.commands[commandIndex].identifiers.includes(
-							subCommandKey,
-						)
-					) {
-						result = commandGroup.commands[commandIndex];
-					}
-				}
-				if (!result) {
-					result = commandGroup.commandHelper;
-				}
-			}
-		}
-		if (!result) {
-			for (
-				let commandIndex = 0;
-				commandIndex < this.basicCommands.length && !result;
-				commandIndex++
-			) {
-				if (this.basicCommands[commandIndex].identifiers.includes(args[0])) {
-					result = this.basicCommands[commandIndex];
-				}
-			}
-		}
-		return result || null;
-	}
-
 	handleTabHeader(data) {
 		const tabMsg = new this.ChatMessage(JSON.parse(data.header));
 		const tabData = tabMsg.toString();
@@ -613,12 +359,6 @@ class GeneralBot {
 			}
 		});
 		this.botInfo.tabUpdateTime = new Date();
-	}
-
-	async readConfig(file) {
-		const rawFile = await this.fsp.readFile(file);
-		const configFile = await JSON.parse(rawFile);
-		return configFile;
 	}
 
 	registerProcessHandlers() {

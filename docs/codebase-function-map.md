@@ -1,7 +1,7 @@
 # Codebase Function Map
 
 ## Notes
-- Scope: JS source in `index.js`, `bots`, `lib`, `src`, plus patches.
+- Scope: JS source in `index.js` and `src/**` (commands, services, lib, cli), plus patches.
 - Text encoding: many strings/comments appear garbled in the current encoding. Refactor: consider UTF-8 normalization.
 - Global state is used heavily in `lib/litematicPrinter.js`, `src/mapart.js`, and `bots/*.js`.
 
@@ -20,7 +20,7 @@ Inline handlers: readline completer, process `uncaughtException`, `SIGINT`, `SIG
 ## jsMarcros_tabcompleter.js
 Purpose: comment-only placeholder. Functions: none. Refactor: Maybe (remove or document).
 
-## lib/containerOperation.js
+## src/lib/containerOperation.js
 Purpose: open containers and move items in/out.
 Functions:
 - openContainerWithTimeout: open a container block with timeout and retry; handles special container UI. Refactor: Yes (nested promise, repeated logic).
@@ -29,24 +29,52 @@ Functions:
 - throw_slot: toss an item from a slot, closing windows as needed. Refactor: Maybe.
 - name: empty stub. Refactor: Yes (remove or implement).
 
-## lib/mcFallout.js
-Purpose: server-specific utility commands (warp, tpc, tab parsing).
+## src/services/minecraft/index.js
+Purpose: aggregate server-specific utility commands (warp, tpc, tab parsing).
+Functions: none (re-exports modules). Refactor: No.
+
+## src/services/minecraft/debugStaff.js
+Purpose: server utility for staff item claim.
 Functions:
 - getFreeDebugStaff: open chestcommands menu to claim staff items. Refactor: Maybe.
+
+## src/services/minecraft/openPreventItem.js
+Purpose: avoid GUI blocks from "open-prevent" items.
+Functions:
 - openPreventSpecItem: swap out "open-prevent" held items to avoid GUI issues. Refactor: Maybe.
+
+## src/services/minecraft/teleport.js
+Purpose: server teleport and server-change helpers.
+Functions:
 - promiseTeleportServer: loop until teleport to target server. Refactor: Maybe (busy loop).
 - teleportServer: send `/ts` and wait for server change or profile load. Refactor: Yes (complex flow, fragile regex).
-- promiseWarp: wrapper to warp with timeout. Refactor: No.
 - waitChangeServer: wait for server change message. Refactor: Maybe.
 - waitProfileLoad: empty stub. Refactor: Yes (remove or implement).
-- getPlayerServer: run `/glist` and parse which server players are on. Refactor: Maybe.
-- rTextNoColor: flatten chat JSON to plain text. Refactor: Maybe.
-- warp: send `/warp` and wait for forcedMove. Refactor: Maybe.
-- tpc: teleport to land via GUI. Refactor: Maybe.
 - sethome: set home and wait for confirmation. Refactor: Maybe.
 Inline helpers: profileLoadCheck, lDcheck, itrText, onforcedMove_ (nested).
 
-## lib/pathfinder.js
+## src/services/minecraft/warp.js
+Purpose: warp helpers.
+Functions:
+- warp: send `/warp` and wait for forcedMove. Refactor: Maybe.
+- promiseWarp: wrapper to warp with timeout. Refactor: No.
+
+## src/services/minecraft/tpc.js
+Purpose: teleport to land via GUI.
+Functions:
+- tpc: teleport to land via GUI. Refactor: Maybe.
+
+## src/services/minecraft/playerServer.js
+Purpose: query player server assignments.
+Functions:
+- getPlayerServer: run `/glist` and parse which server players are on. Refactor: Maybe.
+
+## src/services/minecraft/text.js
+Purpose: normalize chat text.
+Functions:
+- rTextNoColor: flatten chat JSON to plain text. Refactor: Maybe.
+
+## src/lib/pathfinder.js
 Purpose: A* flying pathfinder.
 Functions:
 - pathfinder.astarfly: wrapper that currently delegates to `astarV2`. Refactor: Yes (dead/legacy code retained).
@@ -58,7 +86,7 @@ Functions:
 - movewrong: increment move error counter. Refactor: Maybe (global state).
 - deathFlagSet: set death flag. Refactor: Maybe (global state).
 
-## lib/schematic.js
+## src/lib/schematic.js
 Purpose: load and manage litematic/NBT schematics and bit arrays.
 Functions:
 - schematic.loadFromFile: dispatch to NBT or litematic loader. Refactor: Maybe.
@@ -86,7 +114,7 @@ Class LitematicaBitArray methods:
 Helpers:
 - outOfRange, validateInclusiveBetween, getLitematicFirstRegion, litematicParsePalette, nbtParsePalette, unSignedRightShift. Refactor: Maybe.
 
-## lib/station.js
+## src/lib/station.js
 Purpose: restock items from station shulkers.
 Functions:
 - checkSupport: test if station config supports an item. Refactor: No.
@@ -97,7 +125,7 @@ Functions:
 Nested helper:
 - st_restock_single: per-item restock flow. Refactor: Yes.
 
-## lib/litematicPrinter.js
+## src/lib/litematicPrinter.js
 Purpose: build schematics in-game (mapart/building/redstone).
 Functions:
 - litematicPrinter.build_file: load schematic and dispatch by model. Refactor: Maybe.
@@ -178,12 +206,45 @@ Functions:
 - stationRestock: legacy restock loop; inner `st_restock_single`. Refactor: Yes (duplicate of lib/station).
 - taskreply/notImplemented/readConfig: shared helpers. Refactor: Yes (dedupe).
 
-## src/modules/botinstance.js
+## src/services/bot/Task.js
+Purpose: task payload container.
+Functions:
+- Task.constructor: initialize task fields. Refactor: No.
+
+## src/services/bot/TaskManager.js
+Purpose: task queue and execution lifecycle.
+Methods:
+- setBot: attach bot reference. Refactor: No.
+- taskSort: sort tasks by priority and timestamp. Refactor: No.
+- init: load persisted tasks and resume. Refactor: Maybe (silent recovery).
+- isTask: resolve command from args. Refactor: No.
+- execute: run resolved command. Refactor: Maybe (error handling).
+- assign: enqueue or execute immediately. Refactor: Maybe.
+- loop: process queue sequentially. Refactor: Maybe.
+- save/readConfig: persist task list. Refactor: Maybe (IO duplication).
+
+## src/services/bot/CommandResolver.js
+Purpose: resolve commands by identifiers from groups and basics.
+Methods:
+- setCommandGroups/setBasicCommands: update registries. Refactor: No.
+- resolve: find command by identifiers. Refactor: Maybe (linear scans).
+
+## src/services/bot/ChatManager.js
+Purpose: outgoing chat throttle queue.
+Methods:
+- setBot/chat/cmd/init: manage chat queue and bot wiring. Refactor: Maybe.
+
+## src/services/bot/MapManager.js
+Purpose: map tracking stub.
+Methods:
+- setBot/init: attach bot and listen for map packets. Refactor: Maybe.
+
+## src/services/bot/BotInstance.js
 Purpose: bot process metadata container.
 Functions:
 - BotInstance.constructor: initialize bot instance fields. Refactor: No.
 
-## src/modules/botmanager.js
+## src/services/bot/BotManager.js
 Purpose: manage bot child processes and state.
 Methods:
 - constructor: init bot list, event emitter, profiles. Refactor: Maybe.
@@ -201,16 +262,16 @@ Methods:
 - createBot: fork child and wire handlers. Refactor: Maybe.
 - getBotInfo/getBotData: query child for info. Refactor: Maybe (timeouts, error handling).
 
-## src/modules/botstatus.js
+## src/services/bot/botStatus.js
 Purpose: status constants. Functions: none. Refactor: Maybe (move to enum module).
 
-## src/modules/colors.js
-Purpose: placeholder. Functions: none. Refactor: Yes (remove or implement).
-
-## src/modules/exitcode.js
+## src/services/bot/exitCode.js
 Purpose: exit code constants and messages. Functions: none. Refactor: Maybe (normalize codes).
 
-## src/modules/discordbot.js
+## src/lib/colors.js
+Purpose: placeholder. Functions: none. Refactor: Yes (remove or implement).
+
+## src/services/discord/discordBot.js
 Purpose: Discord bot for bot control UI.
 Functions:
 - DiscordBotStart: set bot manager and connect. Refactor: No.
@@ -227,16 +288,24 @@ Functions:
 - noPermission: send permission error. Refactor: No.
 - notImplemented: send not-implemented response. Refactor: Maybe.
 
-## bots/generalbot.js
+## src/cli/bots/general.js
 Purpose: bootstrap entrypoint for `GeneralBot` with dependency injection.
 Functions: none (loads dependencies, constructs `GeneralBot`, starts bot). Refactor: No.
 
-## src/bots/general/GeneralBot.js
+## src/cli/bots/mapart.js
+Purpose: bootstrap entrypoint for `MapArtBot` with dependency injection.
+Functions: none (loads dependencies, constructs `MapArtBot`, starts bot). Refactor: No.
+
+## src/services/bot/GeneralBot.js
 Purpose: general bot runtime, task queue, and command dispatch (class-based).
 Class:
 - GeneralBot.start/createBot/registerBotEvents/handle* methods: lifecycle and event wiring. Refactor: Maybe (file still large).
-- Task: task payload container. Refactor: No.
-Notes: taskManager/chatManager/mapManager are instance helpers; command resolution is centralized in `resolveCommand`.
+Notes: taskManager/chatManager/mapManager are separate modules; command resolution is centralized in `CommandResolver`.
+
+## src/services/bot/MapArtBot.js
+Purpose: mapart bot specialization of `GeneralBot`.
+Class:
+- MapArtBot: extends GeneralBot without overrides yet. Refactor: Maybe (define explicit overrides).
 
 ## patches/mineflayer@4.18.0.patch
 Purpose: disable look packet and bot.lookAt. Refactor: Maybe (document patch usage).
