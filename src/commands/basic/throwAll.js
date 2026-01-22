@@ -1,7 +1,8 @@
 const containerOperation = require("../../lib/containerOperation");
 const { getContext } = require("./context");
 
-module.exports = {
+/** @type {OFABot.Command} */
+const command = {
   name: "throw all",
   identifiers: ["throwall"],
   execute: async function throwAllCommand() {
@@ -12,3 +13,5 @@ module.exports = {
   },
   longRunning: false,
 };
+
+module.exports = command;

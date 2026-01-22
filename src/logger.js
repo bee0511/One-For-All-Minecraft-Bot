@@ -21,7 +21,8 @@ function logger(logToFile = false, type = "INFO", name = "CONSOLE", ...args) {
   const arg = args.join(" ");
   const fmtTime = sd.format(new Date(), "YYYY/MM/DD HH:mm:ss");
   const logType = logTypes[type] || type;
-  nameColor =  (name == "BOTMANAGER" || name =="CONSOLE")?"\x1b[92m" : "\x1b[96m"
+  const nameColor =
+    name == "BOTMANAGER" || name == "CONSOLE" ? "\x1b[92m" : "\x1b[96m";
   const logMessage = `[${fmtTime}][${logType}][${nameColor}${name}\x1b[0m] ${arg}`;
   const plainLogMessage = logMessage.replace(/\x1b\[\d+m/g, "");
 

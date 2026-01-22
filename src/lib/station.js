@@ -1,5 +1,5 @@
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
-const pTimeout = require('p-timeout');      //目標弄掉這個
+const pTimeout = require('p-timeout');      //?��?弄�??��?
 const containerOperation = require(`../lib/containerOperation`);
 const mcFallout = require("../services/minecraft");
 const pathfinder = require(`../lib/pathfinder`);
@@ -9,7 +9,7 @@ const wait = () => new Promise(setImmediate)
 const { once } = require('events')
 const station = {
     checkSupport: function (bot, stationConfig, target) {
-        let sup = getCFG(stationConfig, target)
+        let sup = station.getIndexOF(stationConfig, target)
         return sup === -1 ? false : true;
     },
     getIndexOF: function (stationConfig, target) {
@@ -28,7 +28,7 @@ const station = {
         const mcData = require('minecraft-data')(bot.version)
         console.log(stationConfig)
         console.log(RS_obj_array)
-        // 將傳送 和 分流檢查寫在內部
+        // 將傳?????��?檢查寫在?�部
         //await mcFallout.promiseTeleportServer(bot,stationConfig.stationServer,15_000)
         //await sleep(1000)
         let inventoryFull = false
@@ -37,13 +37,13 @@ const station = {
         }
         async function st_restock_single(stationConfig, restockid, quantity) {
             let remain = quantity
-            mt_cfg = station.getIndexOF(stationConfig, restockid)
+            let mt_cfg = station.getIndexOF(stationConfig, restockid)
             //console.log(stationConfig)
             //openContainerWithTimeout
             //check server
             await mcFallout.promiseTeleportServer(bot, stationConfig.stationServer, 15_000)
             //console.log(stationConfig.materials[mt_cfg])
-            if (mt_cfg != -1) {  //取出 或放回原和
+            if (mt_cfg != -1) {  //?�出 ?�放?��???
                 let boxPos = new Vec3(stationConfig.materials[mt_cfg][1][0], stationConfig.materials[mt_cfg][1][1], stationConfig.materials[mt_cfg][1][2])
                 let standOffest = v(stationConfig.offset[stationConfig.materials[mt_cfg][1][3]])
                 let btnOffset = v(stationConfig.offset[stationConfig.materials[mt_cfg][1][4]])
@@ -53,8 +53,8 @@ const station = {
 
                 if (quantity >= 0) {
                     if (standPos.distanceTo(bot.entity.position) > 100) {
-                        console.log("距離盒子過遠或不再材料站內");
-                        console.log(`傳送中 ${stationConfig.stationWarp}`);
+                        console.log("distance too far, warp to station");
+                        console.log(`warp to ${stationConfig.stationWarp}`);
                         await mcFallout.warp(bot, stationConfig.stationWarp, 3000)
                         await sleep(1000);
                     }
@@ -76,13 +76,13 @@ const station = {
                             b++;
                         }
                         if (!shulker_box) {
-                            console.log(`開啟盒子 ${stationConfig, restockid} 失敗`, boxPos)
+                            console.log(`?��??��? ${restockid} 失�?`, boxPos)
                             continue q;
                         } else {
-                            let tmpRemain = await containerOperation.withdraw(bot, shulker_box, restockid, remain, false)
+                            let tmpRemain = await containerOperation.withdraw(bot, shulker_box, restockid, remain, false, 0)
                             console.log(tmpRemain)
                             if (tmpRemain == -2) {
-                                console.log("盒子空了 點及按鈕")
+                                console.log("?��?空�? 點�??��?")
                                 await bot.activateBlock(bot.blockAt(btnPos));
                                 await bot.waitForTicks(8);
                             } else if (tmpRemain == -1) {  //full
@@ -99,8 +99,8 @@ const station = {
                     }
                 } else {
                     if (standPos.distanceTo(bot.entity.position) > 100) {
-                        console.log("距離盒子過遠或不再材料站內");
-                        console.log(`傳送中 ${stationConfig.stationWarp}`);
+                        console.log("distance too far, warp to station");
+                        console.log(`warp to ${stationConfig.stationWarp}`);
                         await mcFallout.warp(bot, stationConfig.stationWarp, 3000)
                         await sleep(1000);
                     }
@@ -116,7 +116,7 @@ const station = {
                         b++;
                     }
                     if (!shulker_box) {
-                        console.log(`開啟盒子 ${stationConfig, restockid} 失敗`, boxPos)
+                        console.log(`?��??��? ${restockid} 失�?`, boxPos)
                     } else {
                         let tmpRemain = await containerOperation.deposit(bot, shulker_box, restockid, -1, false)
                         console.log(tmpRemain)
@@ -134,17 +134,17 @@ const station = {
                 //await sleep(400)
 
             }
-            if (mt_cfg == -1 && remain != 0) {  //放入overfull
+            if (mt_cfg == -1 && remain != 0) {  //?�入overfull
                 remain = bot.inventory.countRange(bot.inventory.inventoryStart, bot.inventory.inventoryEnd, mcData.itemsByName[restockid].id, null)
-                console.log(restockid, remain, '放入overfull')
+                console.log(restockid, remain, '?�入overfull')
                 let boxPos = new Vec3(stationConfig.overfull[0], stationConfig.overfull[1], stationConfig.overfull[2])
                 let standOffest = v(stationConfig.offset[stationConfig.overfull[3]])
                 let btnOffset = v(stationConfig.offset[stationConfig.overfull[4]])
                 let standPos = boxPos.plus(standOffest)
                 let btnPos = boxPos.plus(btnOffset)
                 if (standPos.distanceTo(bot.entity.position) > 100) {
-                    console.log("距離盒子過遠或不再材料站內");
-                    console.log(`傳送中 ${stationConfig.stationWarp}`);
+                    console.log("distance too far, warp to station");
+                    console.log(`warp to ${stationConfig.stationWarp}`);
                     await mcFallout.warp(bot, stationConfig.stationWarp, 3000)
                     await sleep(1000);
                 }
@@ -159,7 +159,7 @@ const station = {
                     b++;
                 }
                 if (!shulker_box) {
-                    console.log(`開啟盒子 overfull 失敗`, boxPos)
+                    console.log(`?��??��? overfull 失�?`, boxPos)
                 } else {
                     let tmpRemain = await containerOperation.deposit(bot, shulker_box, restockid, -1, false)
                     console.log(tmpRemain)
@@ -196,11 +196,11 @@ const station = {
             let stand_dirc_offset = stationConfig.offset[stationConfig.materials[findItemMaterialsIndex][1][3]];
             let botton_dirc_offset = stationConfig.offset[stationConfig.materials[findItemMaterialsIndex][1][4]];
             if (stand_dirc_offset == undefined || botton_dirc_offset == undefined) {
-                console.log(`材料站 ${stationConfig.stationName} 無法取得 ${restockid} 站點與按鈕 偏移信息`)
-                console.log(`請確保該項材料(${restockid})格式為\n
-                格式:["${restockid}", [盒子x座標, 盒子y座標, 盒子z座標 ,"站點偏移","按鈕偏移"]],\n
-                範例:["${restockid}", [-7948, 131, -1688 ,"S","bS"]],\n
-                並確保該偏移值確實存在於offset中`)
+                console.log(`station ${stationConfig.stationName} missing offset for ${restockid}`);
+
+
+
+
                 bot.gkill(202)
                 if (bot.blockAt(shulkerBox_loc.offset(-1, 0, 0)).name.indexOf('comparator') != -1) {
                     standPos = shulkerBox_loc.offset(-3, 1, 0);
@@ -223,14 +223,14 @@ const station = {
                 botton_loc = shulkerBox_loc.offset(botton_dirc_offset[0], botton_dirc_offset[1], botton_dirc_offset[2]);
             }
             if (standPos.distanceTo(bot.entity.position) > 100) {
-                console.log("距離盒子過遠或不再材料站內");
-                console.log(`傳送中 ${stationConfig.stationWarp}`);
+                console.log("distance too far, warp to station");
+                console.log(`warp to ${stationConfig.stationWarp}`);
                 await mcFallout.warp(bot, stationConfig.stationWarp, 3000)
                 await sleep(1000);
             }
             await pathfinder.astarfly(bot, standPos, null, null, null, false)
             await sleep(200);
-            //console.log('目標點距離')
+            //console.log('?��?點�???)
             //console.log(standPos.distanceTo(bot.entity.position));
             while (standPos.distanceTo(bot.entity.position) > 2) {
                 bot._client.write("abilities", {
@@ -260,15 +260,15 @@ const station = {
                     try {
                         shu = await pTimeout(bot.openBlock(bot.blockAt(shulkerBox_loc)), 1000);
                         success_open = true;
-                        console.log("開盒子成功"); 
+                        console.log("container opened");
                         break;
                     } catch (e) {
-                        console.log("開盒子失敗");
+                        console.log("open container failed");
                         await sleep(100);
                     }
                 }
-                if (success_open && shu.title.includes("跟您確認件事")) {
-                    console.log('點擊容器同意規範')
+                if (success_open && shu.title.includes("跟您確�?件�?")) {
+                    console.log('點�?容器?��?規�?')
                     await bot.simpleClick.leftMouse(30)
                 }
                 if (success_open) {
@@ -317,10 +317,10 @@ const station = {
                             }
                             shu = await pTimeout(bot.openBlock(bl), 1000);
                             success_open = true;
-                            console.log("開盒子成功");
+                            console.log("container opened");
                             break;
                         } catch (e) {
-                            console.log("開盒子失敗");
+                            console.log("open container failed");
                             await sleep(100);
                         }
                     }
@@ -351,22 +351,22 @@ const station = {
                         }
                         shu = await pTimeout(bot.openBlock(bl), 1000);
                         success_open = true;
-                        console.log("開盒子成功");
+                        console.log("container opened");
                     } catch (e) {
-                        console.log("開盒子失敗");
+                        console.log("open container failed");
                         await sleep(1000);
                         continue ii
                     }
-                    if (success_open&&shu.title.includes("跟您確認件事")) {
-                        console.log('點擊容器同意規範')
+                    if (success_open&&shu.title.includes("跟您確�?件�?")) {
+                        console.log('點�?容器?��?規�?')
                         await bot.simpleClick.leftMouse(30)
                     }
                     if (success_open) {
-                        console.log("提取中...")
-                        let tempremain = await containerOperation.withdraw(bot, shu, restockid, remain, false);
+                        console.log("?��?�?..")
+                        let tempremain = await containerOperation.withdraw(bot, shu, restockid, remain, false, 0);
                         shu.close();
                         if (tempremain == -2) {
-                            console.log("盒子空了 點及按鈕")
+                            console.log("?��?空�? 點�??��?")
                             await bot.activateBlock(bot.blockAt(botton_loc));
                             await bot.waitForTicks(8);
                         } else {

@@ -1,7 +1,9 @@
-const { Vec3 } = require("vec3");
+const v = require("vec3");
+const Vec3 = v.Vec3;
 const { getContext } = require("./context");
 
-module.exports = {
+/** @type {OFABot.Command} */
+const command = {
   name: "interact",
   identifiers: ["interact"],
   execute: async function interactCommand(task) {
@@ -23,3 +25,5 @@ module.exports = {
   },
   longRunning: false,
 };
+
+module.exports = command;

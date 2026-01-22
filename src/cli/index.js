@@ -70,9 +70,9 @@ function handleCommand(input) {
         console.log(`Usage: .create <botName>`);
         break;
       }
-      checkbot = botManager.getBotByName(args[0])
+      const checkbot = botManager.getBotByName(args[0]);
       if (checkbot) {
-        botManager.createBot(checkbot.name)
+        botManager.createBot(checkbot.name);
       } else {
         botManager.initBot(args[0]);
       }
@@ -88,7 +88,7 @@ function handleCommand(input) {
       if (checkBotValid(selectedBot)) {
         selectedBot.childProcess.send({ type: "exit" });
         process.title = "[Bot][-] type .switch to select a bot";
-      }//TODO 這邊exit後可能要刪除bot instance 避免無法再次create
+      } //TODO 這邊exit後可能要刪除bot instance 避免無法再次create
       break;
     case "reload":
       selectedBot = botManager.getCurrentBot();
@@ -98,7 +98,7 @@ function handleCommand(input) {
           true,
           "INFO",
           "CONSOLE",
-          `Reloading ${selectedBot.name} in ${selectedBot.reloadCD} ms`
+          `Reloading ${selectedBot.name} in ${selectedBot.reloadCD} ms`,
         );
       }
       break;
@@ -107,12 +107,12 @@ function handleCommand(input) {
       break;
     case "switch":
       const botName = args[0];
-      let botID = parseInt(botName, 10)
-      ok = false;
+      let botID = parseInt(botName, 10);
+      let ok = false;
       if (!Number.isNaN(botID) && botID != undefined) {
-        ok |= botManager.setCurrentBotByID(botID);
+        ok = ok || botManager.setCurrentBotByID(botID);
       } else {
-        ok |= botManager.setCurrentBotByName(botName);
+        ok = ok || botManager.setCurrentBotByName(botName);
       }
       if (!ok) console.log(`Usage: .switch <botName or botID>`);
       const currentBot = botManager.getCurrentBot();
@@ -121,8 +121,12 @@ function handleCommand(input) {
       break;
     case "all":
       botManager.bots.forEach((bot, i) => {
-        if(bot.childProcess) bot.childProcess.send({ type: "cmd", text: input.slice(5, input.length) });
-      })
+        if (bot.childProcess)
+          bot.childProcess.send({
+            type: "cmd",
+            text: input.slice(5, input.length),
+          });
+      });
       break;
     default:
       selectedBot = botManager.getCurrentBot();
@@ -167,7 +171,7 @@ function main() {
     true,
     "INFO",
     "CONSOLE",
-    `Program starting. Press Ctrl+C to exit   PID: ${process.pid}`
+    `Program starting. Press Ctrl+C to exit   PID: ${process.pid}`,
   );
   addMainProcessEventHandler();
   addConsoleEventHandler();

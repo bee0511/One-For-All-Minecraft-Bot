@@ -1,7 +1,8 @@
 const mcFallout = require("../../services/minecraft");
 const { getContext } = require("./context");
 
-module.exports = {
+/** @type {OFABot.Command} */
+const command = {
   name: "tpc",
   identifiers: ["tpc"],
   execute: async function tpcCommand(task) {
@@ -12,3 +13,5 @@ module.exports = {
   },
   longRunning: true,
 };
+
+module.exports = command;

@@ -4,7 +4,6 @@ const {
 	Intents,
 	MessageActionRow,
 	MessageButton,
-	MessageOptions,
 	MessagePayload,
 	MessageSelectMenu,
 	MessageEmbed,
@@ -39,7 +38,7 @@ function login() {
 			true,
 			"ERROR",
 			"DISCORD",
-			`Discord Bot Login 失敗\n${err.message}`,
+			`Discord Bot Login 失�?\n${err.message}`,
 		);
 	}
 }
@@ -56,12 +55,13 @@ function addDiscordBotEventHandler() {
 			activities: [
 				{
 					name: "Minecraft",
-					type: 1,
+					type: "STREAMING",
 					url: "https://www.twitch.tv/nacho_dayo",
 				},
 			],
 			status: "online",
 		});
+		/** @type {any} */
 		const channel = client.channels.cache.get(
 			config.discord_setting.channelId,
 		);
@@ -79,7 +79,7 @@ function addDiscordBotEventHandler() {
 				) {
 					const firstEmbed = m.embeds[0];
 					const matchingField = firstEmbed.fields.find((field) =>
-						field.name.startsWith("目前共"),
+						field.name.startsWith("Bots"),
 					);
 					return matchingField !== undefined;
 				} else {
@@ -109,6 +109,7 @@ function addDiscordBotEventHandler() {
 		let newbotMenuId = await channel.send(generateBotMenu());
 		botMenuId = newbotMenuId.id;
 		setInterval(async () => {
+			/** @type {any} */
 			let channel = client.channels.cache.get(
 				config.discord_setting.channelId,
 			); //error here bug
@@ -124,7 +125,7 @@ function addDiscordBotEventHandler() {
 		}, 30_000);
 	});
 	//botmenu handler
-	client.on("interactionCreate", async (interaction) => {
+client.on("interactionCreate", async (/** @type {any} */ interaction) => {
 		if (interaction.isCommand()) return;
 		//  console.log(interaction)
 		if (!interaction.customId.startsWith("botmenu")) {
@@ -156,7 +157,7 @@ function addDiscordBotEventHandler() {
 						.setCustomId("botmenu-close-confirm-btn")
 						.setLabel("Click Again To close")
 						.setStyle("DANGER")
-						.setEmoji("⚪");
+						
 					const [row1, row2] = interaction.message.components;
 					await interaction.update({
 						components: [
@@ -218,7 +219,7 @@ function addDiscordBotEventHandler() {
 		}
 	});
 	//generalbotcontrolmenu handler
-	client.on("interactionCreate", async (interaction) => {
+client.on("interactionCreate", async (/** @type {any} */ interaction) => {
 		if (interaction.isCommand()) return;
 		//  console.log(interaction)
 		if (!interaction.customId.startsWith("generalbotcontrolmenu")) {
@@ -279,7 +280,7 @@ async function setBotMenuNotInService() {
 			} else if (component.type === "SELECT_MENU") {
 				return component
 					.setDisabled(true)
-					.setPlaceholder("❌ | Not In Service");
+					.setPlaceholder("Not In Service");
 				// If the component is a selectmenu, set it to be disabled and clear its options
 			} else {
 				// If the component is not a button or selectmenu, just return it unmodified
@@ -290,7 +291,7 @@ async function setBotMenuNotInService() {
 		return new MessageActionRow().addComponents(newComponents);
 	});
 	const author = {
-		name: "當前Bots",
+		name: "Bots",
 		iconURL: "https://i.imgur.com/AfFp7pu.png",
 		url: "https://github.com/JKLoveUU/Bot2",
 	};
@@ -300,12 +301,12 @@ async function setBotMenuNotInService() {
 		.setColor("RED")
 		.setThumbnail("https://i.imgur.com/AfFp7pu.png")
 		.addFields({
-			name: `目前共 \`${"-"}\` 隻 bot`,
+			name: "Bots (-)",
 			value: "\`Not In Service\`",
 		})
 		.setTimestamp()
 		.setFooter({
-			text: "關閉於",
+			text: "Last updated",
 			iconURL: "https://i.imgur.com/AfFp7pu.png",
 		});
 	await oldmenu.edit({ embeds: [embed], components: closeComponents });
@@ -324,18 +325,18 @@ function generateBotMenu() {
 	const row1 = new MessageActionRow().addComponents(
 		new MessageButton()
 			.setCustomId("botmenu-shift-btn")
-			.setLabel("下移")
+			.setLabel("Shift")
 			.setStyle("SECONDARY"),
 		new MessageButton()
 			.setCustomId("botmenu-refresh-btn")
 			.setLabel("Refresh")
-			.setStyle("SUCCESS")
-			.setEmoji("♻️"),
+			.setStyle("SUCCESS"),
+			
 		new MessageButton()
 			.setCustomId("botmenu-close-btn")
 			.setLabel("Close")
 			.setStyle("DANGER")
-			.setEmoji("⚪"),
+			
 	);
 	const row2 = new MessageActionRow().addComponents(
 		new MessageSelectMenu()
@@ -350,7 +351,7 @@ function generateBotMenu() {
 }
 function generateBotMenuEmbed() {
 	const author = {
-		name: "當前Bots",
+		name: "Bots",
 		iconURL: "https://i.imgur.com/AfFp7pu.png",
 		url: "https://github.com/JKLoveUU/Bot2",
 	};
@@ -359,13 +360,13 @@ function generateBotMenuEmbed() {
 	for (let i = 0; i < botManager.getBotNums(); i++) {
 		const bot = botManager.getBotByIndex(i);
 		botsfield += `${i})`.padStart(
-			parseInt(botManager.getBotNums() / 10) + 2,
+			Math.floor(botManager.getBotNums() / 10) + 2,
 		);
 		botsfield += ` ${bot.name}`.padEnd(longestLength + 1);
 		botsfield += ` ${botstatus[bot.status]}\n`;
 	}
 	botsfield = botsfield
-		? `Id`.padEnd(parseInt(botManager.getBotNums() / 10) + 2) +
+		? `Id`.padEnd(Math.floor(botManager.getBotNums() / 10) + 2) +
 			"|" +
 			`Bot`.padEnd(longestLength) +
 			"|Status\n" +
@@ -377,12 +378,12 @@ function generateBotMenuEmbed() {
 		.setColor("GREEN")
 		.setThumbnail("https://i.imgur.com/AfFp7pu.png")
 		.addFields({
-			name: `目前共 \`${botManager.getBotNums()}\` 隻 bot`,
-			value: "\`\`\`" + (botsfield ? botsfield : "無") + "\`\`\`",
+			name: `Bots (${botManager.getBotNums()})`,
+			value: "```" + (botsfield ? botsfield : "-") + "```",
 		})
 		.setTimestamp()
 		.setFooter({
-			text: "更新於",
+			text: "Last updated",
 			iconURL: "https://i.imgur.com/AfFp7pu.png",
 		});
 	return embed;
@@ -405,18 +406,18 @@ function generateGeneralBotControlMenu(botinfo) {
 		//   .setStyle('PRIMARY'),
 		new MessageButton()
 			.setCustomId("generalbotcontrolmenu-newest-btn")
-			.setLabel("下移")
+			.setLabel("Shift")
 			.setStyle("SECONDARY"),
 		new MessageButton()
 			.setCustomId("generalbotcontrolmenu-refresh-btn")
 			.setLabel("Refresh")
-			.setStyle("SUCCESS")
-			.setEmoji("♻️"),
+			.setStyle("SUCCESS"),
+			
 		new MessageButton()
 			.setCustomId("generalbotcontrolmenu-close-btn")
 			.setLabel("Close Panel")
 			.setStyle("DANGER")
-			.setEmoji("⚪"),
+			
 	);
 	const row2 = new MessageActionRow().addComponents(
 		new MessageSelectMenu()
@@ -426,46 +427,46 @@ function generateGeneralBotControlMenu(botinfo) {
 			.setMaxValues(1)
 			.addOptions([
 				{
-					label: "基礎操作",
+					label: "Basic Operations",
 					description: "Open menu of Basic operations",
 					value: "generalbotcontrolmenu-basic-operations-menu",
-					emoji: "🛠️",
+					
 				},
 				{
-					label: "地圖畫功能",
+					label: "Map Art",
 					description: "Open menu of mapart",
 					value: "generalbotcontrolmenu-mapart-menu",
-					emoji: "🗺️",
+					
 				},
 				{
-					label: "倉庫管理功能",
+					label: "WMS",
 					description: "Open menu of warehouse manager system",
 					value: "generalbotcontrolmenu-wms-menu",
-					emoji: "🏬",
+					
 				},
 				{
 					label: "Ping",
 					description: "This is option 1",
 					value: "generalbotcontrolmenu-ping",
-					emoji: "🔥",
+					
 				},
 				{
 					label: "Current Time",
 					description: "Show Current Time",
 					value: "generalbotcontrolmenu-time",
-					emoji: "🔥",
+					
 				},
 				{
 					label: "New Button",
 					description: "Create message with button",
 					value: "generalbotcontrolmenu-button",
-					emoji: "🔥",
+					
 				},
 				{
 					label: "Permissions",
 					description: "not implement yet",
 					value: "generalbotcontrolmenu-permission-menu",
-					emoji: "🔥",
+					
 				},
 			]),
 	);
@@ -497,7 +498,7 @@ function generateGeneralBotControlMenuEmbed(botinfo) {
 		.setThumbnail(botinfo.avatar)
 		.addFields(
 			{
-				name: ":globe_with_meridians:分流",
+				name: ":globe_with_meridians: Server",
 				value: `${"`" + botinfo.server.toString().padEnd(3) + "`"}`,
 				inline: true,
 			},
@@ -512,15 +513,15 @@ function generateGeneralBotControlMenuEmbed(botinfo) {
 				inline: true,
 			},
 			{
-				name: ":triangular_flag_on_post:座標",
+				name: ":triangular_flag_on_post: Position",
 				value: `X:${"`" + botinfo.position.x.toFixed(1).toString().padStart(7) + "`"} Y:${"`" + botinfo.position.y.toFixed(1).toString().padStart(7) + "`"} Z:${"`" + botinfo.position.z.toFixed(1).toString().padStart(7) + "`"}`,
 				inline: false,
 			},
 			//{ name: '\u200B', value: '\u200B' },
-			{ name: ":arrow_forward:當前任務", value: crtTask },
+			{ name: ":arrow_forward: Current Task", value: crtTask },
 			//{ name: '\u200b', value: '\u200b', inline: false }, // This creates an empty field to ensure the next row starts on a new line
 			{
-				name: `:pencil:任務列隊 ${"-"} / ${botinfo.tasks.length} PAGE ${"-"}`,
+				name: `:pencil: Task Queue ${"-"} / ${botinfo.tasks.length} PAGE ${"-"}`,
 				value: taskQueue,
 			},
 		)

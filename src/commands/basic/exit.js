@@ -1,6 +1,7 @@
 const { getContext } = require("./context");
 
-module.exports = {
+/** @type {OFABot.Command} */
+const command = {
   name: "exit",
   identifiers: ["exit"],
   execute: async function exitCommand() {
@@ -10,3 +11,5 @@ module.exports = {
   },
   longRunning: false,
 };
+
+module.exports = command;

@@ -1,6 +1,7 @@
 const { getContext } = require("./context");
 
-module.exports = {
+/** @type {OFABot.Command} */
+const command = {
   name: "experience query",
   identifiers: ["xp", "exp", "experience"],
   execute: async function experienceCommand(task) {
@@ -32,3 +33,5 @@ module.exports = {
   },
   longRunning: false,
 };
+
+module.exports = command;

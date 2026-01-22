@@ -1,5 +1,11 @@
 const { getContext } = require("./context");
 
+/**
+ * @param {OFABot.Task} task
+ * @param {string} minecraftMessage
+ * @param {string} consoleMessage
+ * @param {string | null} discordMessage
+ */
 function replyBySource(task, minecraftMessage, consoleMessage, discordMessage) {
   const { bot } = getContext();
   switch (task.source) {

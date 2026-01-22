@@ -63,8 +63,12 @@ mapart 補材料時 分流重啟 多耗時很久
 
 `npm install`
 
-`node .`
+`npm run build`
+
+`node .` (or `npm start`)
 (Node v18.16.0)
+
+`npm run typecheck` (optional, JS + JSDoc)
 
 有修改 Mineflayer & Protocol 內部分功能
 

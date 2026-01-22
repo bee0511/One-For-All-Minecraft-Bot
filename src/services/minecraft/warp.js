@@ -10,7 +10,7 @@ async function warp(bot, warpp, timeout = 15_000, log = false) {
 				rej();
 			}, timeout);
 			bot.chat(`/warp ${warpp}`);
-			await once(bot, "forcedMove", onforcedMove_);
+			await once(bot, "forcedMove");
 			if (!fail) {
 				if (log)
 					bot.logger(
@@ -32,9 +32,6 @@ async function warp(bot, warpp, timeout = 15_000, log = false) {
 			`warp ${warpp} - 傳送失敗`,
 		);
 		return false;
-	}
-	function onforcedMove_() {
-		return;
 	}
 }
 

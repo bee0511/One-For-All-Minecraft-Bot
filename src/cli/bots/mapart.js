@@ -1,5 +1,5 @@
 if (!process.argv[2]) {
-	return;
+  process.exit(0);
 }
 
 const fs = require("fs");
@@ -25,27 +25,27 @@ const SBemeraldRegex = /綠寶石.*?(\d+(?:,\d+)*)元/;
 const SBcoinRegex = /村民錠.*?(\d+(?:,\d+)*)個.*?每個.*?(\d+(?:,\d+)*)元/;
 
 const mapArtBot = new MapArtBot({
-	profileName: process.argv[2],
-	botType: process.argv[3],
-	debug,
-	enableChat,
-	process,
-	fs,
-	fsp,
-	mineflayer,
-	logger,
-	profiles,
-	commands: [mapart],
-	basicCommandsModule,
-	chatMessageClass: ChatMessage,
-	regexes: {
-		serverRegex,
-		emeraldRegex,
-		coinRegex,
-		SBserverRegex,
-		SBemeraldRegex,
-		SBcoinRegex,
-	},
+  profileName: process.argv[2],
+  botType: process.argv[3],
+  debug,
+  enableChat,
+  process,
+  fs,
+  fsp,
+  mineflayer,
+  logger,
+  profiles,
+  commands: [mapart],
+  basicCommandsModule,
+  chatMessageClass: ChatMessage,
+  regexes: {
+    serverRegex,
+    emeraldRegex,
+    coinRegex,
+    SBserverRegex,
+    SBemeraldRegex,
+    SBcoinRegex,
+  },
 });
 
 mapArtBot.start();

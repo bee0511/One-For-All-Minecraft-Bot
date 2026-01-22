@@ -1,5 +1,6 @@
 const BotInstance = require("./BotInstance");
 const EventEmitter = require("events");
+const fs = require("fs");
 const { logger } = require("../../logger");
 const { fork } = require("child_process");
 const path = require("path");
@@ -51,7 +52,7 @@ class BotManager {
     }, 0);
     const longestStatusLength =  14
     console.log(`Total ${this.getBotNums()} bots`);
-    console.log(`Id`.padEnd((parseInt(this.bots.length / 10)) + 2)+' | '+ (`Bot`.padEnd(longestBotLength)) +' | '+(`Status`.padEnd(longestStatusLength))+  ' | Type    | CrtType')
+    console.log(`Id`.padEnd(Math.floor(this.bots.length / 10) + 2)+' | '+ (`Bot`.padEnd(longestBotLength)) +' | '+(`Status`.padEnd(longestStatusLength))+  ' | Type    | CrtType')
     this.bots.forEach((bot, i) => {
       console.log(
         `${i}  | ${bot.name.padEnd(longestBotLength)} | ${botstatus[bot.status].padEnd(longestStatusLength)} | ${
@@ -244,11 +245,15 @@ class BotManager {
     不然打包可能會遺漏這些
   */
   getBotFilePath(crtType) {
+    const distRoot = path.join(process.cwd(), "dist", "src", "cli", "bots");
+    const srcRoot = path.join(process.cwd(), "src", "cli", "bots");
+    const useDist = fs.existsSync(distRoot);
+
     switch (crtType) {
       case "general":
-        return `${process.cwd()}/src/cli/bots/general.js`;
+        return path.join(useDist ? distRoot : srcRoot, "general.js");
       case "mapart":
-        return `${process.cwd()}/src/cli/bots/mapart.js`;
+        return path.join(useDist ? distRoot : srcRoot, "mapart.js");
       default:
         logger(true, "ERROR", "BOTMANAGER", `Invalid crtType: ${crtType}`);
         exit(1000);

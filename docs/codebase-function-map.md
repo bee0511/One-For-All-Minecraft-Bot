@@ -4,6 +4,7 @@
 - Scope: JS source in `index.js` and `src/**` (commands, services, lib, cli), plus patches.
 - Text encoding: many strings/comments appear garbled in the current encoding. Refactor: consider UTF-8 normalization.
 - Global state is used heavily in `lib/litematicPrinter.js`, `src/mapart.js`, and `bots/*.js`.
+- Type checking: `tsconfig.json` uses JS + JSDoc (`checkJs`) and emits to `dist/`.
 
 ## index.js
 Purpose: CLI entrypoint, manages bot processes, console commands, and Discord bot.

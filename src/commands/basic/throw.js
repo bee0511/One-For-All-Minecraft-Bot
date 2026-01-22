@@ -2,7 +2,8 @@ const containerOperation = require("../../lib/containerOperation");
 const { getContext } = require("./context");
 const { replyBySource } = require("./reply");
 
-module.exports = {
+/** @type {OFABot.Command} */
+const command = {
   name: "throw",
   identifiers: ["throw"],
   execute: async function throwCommand(task) {
@@ -24,3 +25,5 @@ module.exports = {
   },
   longRunning: true,
 };
+
+module.exports = command;

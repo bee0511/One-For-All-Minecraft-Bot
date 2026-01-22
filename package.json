@@ -5,10 +5,15 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "rb": "pkg -t node18-win-x64 index.js -o release-pre/pre.exe",
-    "b": "pkg -t node18-win-x64 index.js -o test/abc.exe",
-    "b_linux": "pkg -t node18-linux index.js -o release-pre/bot-linux",
-    "bd": "pkg -t node18-win-x64 index.js -o test/abc.exe --debug"
+    "clean": "node -e \"require('fs').rmSync('dist', {recursive:true, force:true})\"",
+    "prebuild": "npm run clean",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "node index.js",
+    "rb": "npm run build && pkg -t node18-win-x64 index.js -o release-pre/pre.exe",
+    "b": "npm run build && pkg -t node18-win-x64 index.js -o test/abc.exe",
+    "b_linux": "npm run build && pkg -t node18-linux index.js -o release-pre/bot-linux",
+    "bd": "npm run build && pkg -t node18-win-x64 index.js -o test/abc.exe --debug"
   },
   "repository": {
     "type": "git",
@@ -16,11 +21,11 @@
   },
   "files": [
     "index.js",
-    "src/**"
+    "dist/**"
   ],
   "pkg": {
     "assets": [
-      "src/**"
+      "dist/**"
     ]
   },
   "author": "JKLove",
@@ -63,6 +68,7 @@
   },
   "devDependencies": {
     "eslint": "^9.39.2",
-    "eslint-plugin-unused-imports": "^4.3.0"
+    "eslint-plugin-unused-imports": "^4.3.0",
+    "typescript": "^5.5.4"
   }
 }

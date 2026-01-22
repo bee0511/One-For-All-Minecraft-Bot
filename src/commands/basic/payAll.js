@@ -1,6 +1,7 @@
 const { getContext } = require("./context");
 
-module.exports = {
+/** @type {OFABot.Command} */
+const command = {
   name: "emerald withdraw",
   identifiers: ["payall", "withdraw"],
   execute: async function payAllCommand(task) {
@@ -19,3 +20,5 @@ module.exports = {
   },
   longRunning: false,
 };
+
+module.exports = command;

@@ -1,7 +1,8 @@
 const containerOperation = require("../../lib/containerOperation");
 const { getContext } = require("./context");
 
-module.exports = {
+/** @type {OFABot.Command} */
+const command = {
   name: "quick throw",
   identifiers: ["qt"],
   execute: async function quickThrowCommand() {
@@ -24,3 +25,5 @@ module.exports = {
   },
   longRunning: true,
 };
+
+module.exports = command;

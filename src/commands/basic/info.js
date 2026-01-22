@@ -28,7 +28,8 @@ function formatSlot(item, bot, mcData) {
   return line;
 }
 
-module.exports = {
+/** @type {OFABot.Command} */
+const command = {
   name: "bot info",
   identifiers: ["info", "i", "stats"],
   execute: async function infoCommand(task) {
@@ -90,3 +91,5 @@ module.exports = {
   },
   longRunning: false,
 };
+
+module.exports = command;

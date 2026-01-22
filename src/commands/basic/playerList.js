@@ -1,6 +1,7 @@
 const { getContext } = require("./context");
 
-module.exports = {
+/** @type {OFABot.Command} */
+const command = {
   name: "player list",
   identifiers: ["plist"],
   execute: async function playerListCommand() {
@@ -12,3 +13,5 @@ module.exports = {
   },
   longRunning: false,
 };
+
+module.exports = command;

@@ -1,6 +1,7 @@
 const { getContext } = require("./context");
 
-module.exports = {
+/** @type {OFABot.Command} */
+const command = {
   name: "click the window",
   identifiers: ["click"],
   execute: async function clickCommand(task) {
@@ -11,3 +12,5 @@ module.exports = {
   },
   longRunning: false,
 };
+
+module.exports = command;

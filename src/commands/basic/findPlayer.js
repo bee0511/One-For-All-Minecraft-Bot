@@ -4,7 +4,8 @@ const { replyBySource } = require("./reply");
 
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
-module.exports = {
+/** @type {OFABot.Command} */
+const command = {
   name: "find player",
   identifiers: ["find", "findplayer"],
   execute: async function findPlayerCommand(task) {
@@ -45,3 +46,5 @@ module.exports = {
   },
   longRunning: false,
 };
+
+module.exports = command;

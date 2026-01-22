@@ -17,6 +17,7 @@ const tpc = require("./tpc");
 const findPlayer = require("./findPlayer");
 const exitCommand = require("./exit");
 
+/** @type {OFABot.Command[]} */
 const commands = [
   taskList,
   interact,
@@ -37,10 +38,13 @@ const commands = [
   exitCommand,
 ];
 
-module.exports = {
+/** @type {OFABot.BasicCommandModule} */
+const basicCommandsModule = {
   label: "basic",
   commands,
   init: async function init(bot, userId, logger) {
     initContext(bot, userId, logger);
   },
 };
+
+module.exports = basicCommandsModule;

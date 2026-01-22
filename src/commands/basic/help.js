@@ -6,7 +6,8 @@ function formatIdentifiers(identifiers) {
   return String(identifiers);
 }
 
-module.exports = {
+/** @type {OFABot.Command} */
+const command = {
   name: "usagetree",
   identifiers: ["help", "?", "usage"],
   execute: async function helpCommand() {
@@ -42,3 +43,5 @@ module.exports = {
   },
   longRunning: false,
 };
+
+module.exports = command;

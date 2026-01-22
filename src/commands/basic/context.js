@@ -1,3 +1,4 @@
+/** @type {OFABot.CommandContext} */
 let context = {
   bot: null,
   logger: null,
@@ -5,6 +6,11 @@ let context = {
   userId: null,
 };
 
+/**
+ * @param {any} bot
+ * @param {string} userId
+ * @param {OFABot.Logger} logger
+ */
 function initContext(bot, userId, logger) {
   context = {
     bot,
@@ -14,6 +20,7 @@ function initContext(bot, userId, logger) {
   };
 }
 
+/** @returns {OFABot.CommandContext} */
 function getContext() {
   return context;
 }
